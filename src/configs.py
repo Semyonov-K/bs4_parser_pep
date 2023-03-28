@@ -42,9 +42,9 @@ def configure_logging():
     # Отсюда начинается новый код!
     # Получение абсолютного пути до файла с логами.
     log_file = log_dir / 'parser.log'
-    
+
     # Инициализация хендлера с ротацией логов.
-    # Максимальный объём одного файла — десять в шестой степени байт (10**6), 
+    # Максимальный объём одного файла — десять в шестой степени байт (10**6),
     # максимальное количество файлов с логами — 5.
     rotating_handler = RotatingFileHandler(
         log_file, maxBytes=10 ** 6, backupCount=5
@@ -57,4 +57,4 @@ def configure_logging():
         level=logging.INFO,
         # Вывод логов в терминал.
         handlers=(rotating_handler, logging.StreamHandler())
-    ) 
+    )

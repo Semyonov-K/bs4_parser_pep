@@ -5,7 +5,7 @@ from urllib.parse import urljoin
 
 import requests_cache
 from bs4 import BeautifulSoup
-from prettytable import PrettyTable
+1
 from tqdm import tqdm
 
 # Дополните импорт из файла configs функцией configure_logging().
@@ -29,27 +29,27 @@ def whats_new(session):
     # Создание "супа".
     soup = BeautifulSoup(response.text, features='lxml')
 
-    # Шаг 1-й: поиск в "супе" тега section с нужным id. Парсеру нужен только 
+    # Шаг 1-й: поиск в "супе" тега section с нужным id. Парсеру нужен только
     # первый элемент, поэтому используется метод find().
     main_div = find_tag(soup, 'section', attrs={'id': 'what-s-new-in-python'})
 
-    # Шаг 2-й: поиск внутри main_div следующего тега div с классом toctree-wrapper.
     # Здесь тоже нужен только первый элемент, используется метод find().
     div_with_ul = find_tag(main_div, 'div', attrs={'class': 'toctree-wrapper'})
 
-    # Шаг 3-й: поиск внутри div_with_ul всех элементов списка li с классом toctree-l1.
     # Нужны все теги, поэтому используется метод find_all().
-    sections_by_python = div_with_ul.find_all('li', attrs={'class': 'toctree-l1'})
+    sections_by_python = div_with_ul.find_all(
+        'li',
+        attrs={'class': 'toctree-l1'}
+    )
 
     # Инициализируйте пустой список results.
     results = [('Ссылка на статью', 'Заголовок', 'Редактор, Автор')]
     for section in tqdm(sections_by_python):
-        version_a_tag = find_tag(section, 'a') # VOPROS
+        version_a_tag = find_tag(section, 'a')
         version_link = urljoin(whats_new_url, version_a_tag['href'])
         response = get_response(session, version_link)
         if response is None:
-            # Если страница не загрузится, программа перейдёт к следующей ссылке.
-            continue 
+            continue
         soup = BeautifulSoup(response.text, 'lxml')
         h1 = find_tag(soup, 'h1')
         dl = find_tag(soup, 'dl')
@@ -92,14 +92,13 @@ def latest_versions(session):
         # Напишите новый код, ориентируясь на план.
         link = a_tag['href']
         text_match = re.search(pattern, a_tag.text)
-        if text_match is not None:  
+        if text_match is not None:
             # Если строка соответствует паттерну,
             # переменным присываивается содержимое групп, начиная с первой.
             version, status = text_match.groups()
-        else:  
+        else:
             # Если строка не соответствует паттерну,
-            # первой переменной присваивается весь текст, второй — пустая строка.
-            version, status = a_tag.text, ''  
+            version, status = a_tag.text, ''
         results.append((link, version, status))
     # Печать результата.
     return results
@@ -115,7 +114,11 @@ def download(session):
     soup = BeautifulSoup(response.text, 'lxml')
     main_tag = find_tag(soup, 'div', {'role': 'main'})
     table_tag = find_tag(main_tag, 'table', {'class': 'docutils'})
-    pdf_a4_tag = find_tag(table_tag, 'a', {'href': re.compile(r'.+pdf-a4\.zip$')})
+    pdf_a4_tag = find_tag(
+        table_tag,
+        'a',
+        {'href': re.compile(r'.+pdf-a4\.zip$')}
+    )
     # Сохраните в переменную содержимое атрибута href.
     pdf_a4_link = pdf_a4_tag['href']
     # Получите полную ссылку с помощью функции urljoin.
@@ -136,7 +139,7 @@ def download(session):
     with open(archive_path, 'wb') as file:
         # Полученный ответ записывается в файл.
         file.write(response.content)
-    logging.info(f'Архив был загружен и сохранён: {archive_path}') 
+    logging.info(f'Архив был загружен и сохранён: {archive_path}')
 
 
 # Скопируйте весь код ниже.
@@ -145,6 +148,7 @@ MODE_TO_FUNCTION = {
     'latest-versions': latest_versions,
     'download': download,
 }
+
 
 def main():
     # Запускаем функцию с конфигурацией логов.
@@ -171,8 +175,8 @@ def main():
     if results is not None:
         # передаём их в функцию вывода вместе с аргументами командной строки.
         control_output(results, args)
-    logging.info('Парсер завершил работу.') 
+    logging.info('Парсер завершил работу.')
 
 
 if __name__ == '__main__':
-    main() 
+    main()
