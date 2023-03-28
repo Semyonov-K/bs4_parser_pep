@@ -6,7 +6,7 @@
 ---
 ## Установка и запуск
 - Скачайте репозиторий через терминал
-  - ```git clone https://github.com/Semyonov-K```
+  - ```git clone https://github.com/Semyonov-K/bs4_parser_pep.git```
 - Установите виртуальное окружение
   - ```python -m venv venv```
 - Запустите виртуальное окружение
