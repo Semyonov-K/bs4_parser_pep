@@ -14,5 +14,5 @@ def file_output(results, cli_args):
     file_path = results_dir / file_name
     with open(file_path, 'w', encoding='utf-8') as f:
         for key in results.keys():
-            f.write("%s, %s\n" %(key, results[key]))
-    logging.info(f'Файл с результатами был сохранён: {file_path}') 
+            f.write("%s, %s\n" % (key, results[key]))
+    logging.info(f'Файл с результатами был сохранён: {file_path}')
