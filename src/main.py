@@ -5,7 +5,6 @@ from urllib.parse import urljoin
 
 import requests_cache
 from bs4 import BeautifulSoup
-1
 from tqdm import tqdm
 
 # Дополните импорт из файла configs функцией configure_logging().
