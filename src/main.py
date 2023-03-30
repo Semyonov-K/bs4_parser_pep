@@ -154,6 +154,8 @@ def main():
     parser_mode = args.mode
     results = MODE_TO_FUNCTION[parser_mode](session)
     if results is not None:
+        if parser_mode == 'pep':
+            results = [[key, value] for key, value in results.items()]
         control_output(results, args)
     logging.info('Парсер завершил работу.')
 
