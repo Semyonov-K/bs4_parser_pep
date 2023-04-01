@@ -1,7 +1,6 @@
 import logging
 import re
 from urllib.parse import urljoin
-from collections import defaultdict
 
 import requests_cache
 from bs4 import BeautifulSoup
@@ -13,7 +12,7 @@ from outputs import control_output
 from utils import find_tag, get_response
 
 
-result_of_status = {}
+res_status = {}
 messages_of_warnings = []
 
 
@@ -32,8 +31,8 @@ def pep(session):
         link = tag_a['href']
         one_page(session, status, link)
     logging.warn('\n'.join(messages_of_warnings))
-    result_of_status['total'] = sum(result_of_status.values())
-    total_result = [[key, value] for key, value in result_of_status.items()]
+    res_status['total'] = sum(res_status.values())
+    total_result = [[key, value] for key, value in res_status.items()]
     return total_result
 
 
@@ -45,10 +44,10 @@ def one_page(session, status, link):
     soup = BeautifulSoup(response.text, features='lxml')
     result = find_tag(soup, string='Status')
     status_sibling = result.parent.next_sibling.next_sibling.text
-    if status_sibling not in result_of_status:
-        result_of_status[status_sibling] = result_of_status.get(status_sibling, 0) + 1
+    if status_sibling not in res_status:
+        res_status[status_sibling] = res_status.get(status_sibling, 0) + 1
     else:
-        result_of_status[status_sibling] += 1
+        res_status[status_sibling] += 1
     if status_sibling not in EXPECTED_STATUS.get(status):
         messages_of_warnings.append(
             f'Несовпадающие статусы: {url_link} '
