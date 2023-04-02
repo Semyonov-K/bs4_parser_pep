@@ -12,11 +12,9 @@ from outputs import control_output
 from utils import find_tag, get_response
 
 
-res_status = {}
-messages_of_warnings = []
-
-
 def pep(session):
+    res_status = {}
+    messages_of_warnings = []
     response = get_response(session, PEP_URL)
     if response is None:
         return
@@ -29,7 +27,13 @@ def pep(session):
         sibling = tag.parent.find_next_sibling()
         tag_a = find_tag(sibling, 'a')
         link = tag_a['href']
-        one_page(session, status, link)
+        status_sibling, message = one_page(session, status, link)
+        if status_sibling not in res_status:
+            res_status[status_sibling] = res_status.get(status_sibling, 0) + 1
+        else:
+            res_status[status_sibling] += 1
+        if message is not None:
+            messages_of_warnings.append(message)
     logging.warn('\n'.join(messages_of_warnings))
     res_status['total'] = sum(res_status.values())
     total_result = [[key, value] for key, value in res_status.items()]
@@ -44,17 +48,14 @@ def one_page(session, status, link):
     soup = BeautifulSoup(response.text, features='lxml')
     result = find_tag(soup, string='Status')
     status_sibling = result.parent.next_sibling.next_sibling.text
-    if status_sibling not in res_status:
-        res_status[status_sibling] = res_status.get(status_sibling, 0) + 1
-    else:
-        res_status[status_sibling] += 1
+    message = None
     if status_sibling not in EXPECTED_STATUS.get(status):
-        messages_of_warnings.append(
+        message = (
             f'Несовпадающие статусы: {url_link} '
             f'Статус в карточке: {status_sibling} '
             f'Ожидаемые статусы: {EXPECTED_STATUS[status]}'
         )
-    return
+    return status_sibling, message
 
 
 def whats_new(session):
